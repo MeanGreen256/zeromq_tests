@@ -2,7 +2,9 @@
 //  Simple request-reply broker in C++
 //
 
-#include "zhelpers.hpp"
+#include <string>
+#include <zmq.hpp>
+#include <iostream>
 
 int main (int argc, char *argv[])
 {

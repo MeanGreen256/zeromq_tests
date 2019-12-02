@@ -3,7 +3,9 @@
 //   Connects REP socket to tcp://localhost:5560
 //   Expects "Hello" from client, replies with "World"
 //
-#include "zhelpers.hpp"
+#include <string>
+#include <zmq.hpp>
+#include <iostream>
 
 int main (int argc, char *argv[])
 {
@@ -14,16 +16,17 @@ int main (int argc, char *argv[])
 
     while(1)
     {
+
+        zmq::message_t request;
+
         //  Wait for next request from client
-        std::string string = s_recv (responder);
+        responder.recv (&request);
+        std::cout << "Received Hello" << std::endl;
         
-        std::cout << "Received request: " << string << std::endl;
-        
-        // Do some 'work'
-        sleep (1);
-        
-        //  Send reply back to client
-        s_send (responder, "World");
+       //  Send reply back to client
+        zmq::message_t reply (5);
+        memcpy (reply.data (), "World", 5);
+        responder.send (reply);
         
     }
 }

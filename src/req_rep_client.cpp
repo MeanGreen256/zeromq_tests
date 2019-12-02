@@ -3,7 +3,10 @@
 //   Sends "Hello" to server, expects "World" back
 //
 
-#include "zhelpers.hpp"
+//#include <zhelpers.hpp>
+#include <string>
+#include <zmq.hpp>
+#include <iostream>
 
 int main (int argc, char *argv[])
 {
@@ -13,11 +16,13 @@ int main (int argc, char *argv[])
     requester.connect("tcp://localhost:5559");
 
     for( int request = 0 ; request < 10 ; request++) {
-        
-        s_send (requester, "Hello");
-        std::string string = s_recv (requester);
-        
-        std::cout << "Received reply " << request
-                << " [" << string << "]" << std::endl;
+        zmq::message_t query (5);
+        memcpy (query.data (), "Hello", 5);
+        requester.send (query);
+
+        zmq::message_t request_msg;
+        //  Wait for next request from client
+        requester.recv (&request_msg);
+        std::cout << "Received Hello" << std::endl;
     }
 }
